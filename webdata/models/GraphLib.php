@@ -102,12 +102,18 @@ class GraphLib
 
     public static function getJSONFromID($id)
     {
+        if ($result = Cache::get($id)) {
+            return json_decode($result);
+        }
+
         self::$_start_id = intval($id);
         $data = self::findData($id);
         if (!$data) {
             return null;
         }
         self::parseCompany($id, $data);
-        return array(self::$_nodes, array_values(self::$_edges));
+        $result = array(self::$_nodes, array_values(self::$_edges));
+        Cache::set($id, json_encode($result, JSON_UNESCAPED_UNICODE));
+        return $result;
     }
 }
