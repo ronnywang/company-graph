@@ -22,11 +22,16 @@ _gaq.push(['_trackPageview']);
 <form method="GET" action="/">
     查詢統一編號：<input type="text" name="id" value="<?= $this->Escape($this->id) ?>"><button type="submit">查詢</button>
 </form>
+<?php if ($this->id) { ?>
 <span id="status">計算關係中...</span>
+<?php } ?>
 <div id="parent"></div>
 <script src="/static/build.js"></script>
 <script>
 !function() {
+    <?php if (!$this->id) { ?>
+        return;
+    <?php } ?>
     var d3 = require("ignacioola-d3/d3"),
         InsightsGraph = require("insights");
 
