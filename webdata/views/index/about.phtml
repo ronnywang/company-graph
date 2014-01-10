@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>公司樹狀關係圖</title>
+<link rel="stylesheet" href="/static/build.css" />
+<?php if (getenv('GOOGLEANALYTICS_ACCOUNT')) { ?>
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', <?= json_encode(getenv('GOOGLEANALYTICS_ACCOUNT')) ?>]);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+<?php } ?>
+</head>
+<body>
+<a href="/">回首頁</a>
+<h1>關於本資料注意事項</h1>
+<ol>
+    <li>資料來源是 <a href="http://company.g0v.ronny.tw/">台灣公司資料</a> ，不一定會與經濟部商業司資料同步</li>
+    <li>資料呈現上沒有顯示方向性，因此 A公司 與 B公司 被線連起來，有可能是 A 持有 B ，也有可能是 B 持有 A</li>
+    <li>公司的關聯是透過「董事名單」，如果有持股但是沒有被列入董事不會在這邊出現</li>
+    <li>如果公司是以個人持股而非代表法人持股，也不會從這邊看的到關聯</li>
+    <li>兩家公司出現在這邊不代表是同集團，例如 <a href="http://company.g0v.ronny.tw/id/23609506">中華職棒事業股份有限公司</a> 的董事有 <a href="http://company.g0v.ronny.tw/id/73251209">統一企業股份有限公司</a> 和 <a href="http://company.g0v.ronny.tw/id/11347802">味全食品工業股份有限公司</a> ，但是統一和味全並不是同一集團。</li>
+    <li>程式碼以 BSD License 公開在 <a href="https://github.com/ronnywang/company-graph">https://github.com/ronnywang/company-graph</a>，歡迎 PULL REQUEST 更好看及更好用的呈現方式</li>
+</ol>
+</body>
+</html>

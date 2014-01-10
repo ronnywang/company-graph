@@ -11,4 +11,8 @@ class IndexController extends Pix_Controller
     {
         return $this->json(GraphLib::getJSONFromID(intval($_GET['id'])));
     }
+
+    public function aboutAction()
+    {
+    }
 }
