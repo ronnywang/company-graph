@@ -19,6 +19,9 @@ _gaq.push(['_trackPageview']);
 <?php } ?>
 </head>
 <body>
+<form method="GET" action="/">
+    查詢統一編號：<input type="text" name="id" value="<?= $this->Escape($this->id) ?>"><button type="submit">查詢</button>
+</form>
 <span id="status">計算關係中...</span>
 <div id="parent"></div>
 <script src="/static/build.js"></script>
