@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>公司樹狀關係圖</title>
+<link rel="stylesheet" href="/static/build.css" />
+<?php if (getenv('GOOGLEANALYTICS_ACCOUNT')) { ?>
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', <?= json_encode(getenv('GOOGLEANALYTICS_ACCOUNT')) ?>]);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+<?php } ?>
+</head>
+<body>
+<span id="status">計算關係中...</span>
+<div id="parent"></div>
+<script src="/static/build.js"></script>
+<script>
+!function() {
+    var d3 = require("ignacioola-d3/d3"),
+        InsightsGraph = require("insights");
+
+    d3.json("/index/json?id=<?= intval($this->id) ?>", function(data) {
+            var nodes = data[0],
+            links = data[1],
+            el = document.getElementById("parent");
+
+            graph = new InsightsGraph(el, nodes, links, {
+            width: screen.width,
+            height: screen.height
+            });
+
+            document.getElementById('status').innerHTML = '關係計算完成，畫圖中...';
+
+            graph.on('rendered', function(){
+                document.getElementById('status').innerHTML = '';
+            });
+
+            graph.tooltip("<div>word: {{text}}({{no}})</div><div>count: {{count}}</div> <div>資本額: {{amount}}</div> <div><h3>董監事名單</h3><pre>{{funder}}</pre></div>");
+            }, 'json');
+}();
+</script>
+</body>
+</html>
