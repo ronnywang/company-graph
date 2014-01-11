@@ -22,6 +22,7 @@ _gaq.push(['_trackPageview']);
 <form method="GET" action="/">
     查詢統一編號：<input type="text" name="id" value="<?= $this->Escape($this->id) ?>"><button type="submit">查詢</button>
     <a href="/index/about">關於本站資料</a>
+    <a href="http://company.g0v.ronny.tw" target="_blank">台灣公司資料查詢</a>
 </form>
 <?php if ($this->id) { ?>
 <span id="status">計算關係中...</span>
@@ -52,7 +53,7 @@ _gaq.push(['_trackPageview']);
                 document.getElementById('status').innerHTML = '';
             });
 
-            graph.tooltip("<div>word: {{text}}({{no}})</div><div>count: {{count}}</div> <div>資本額: {{amount}}</div> <div><h3>董監事名單</h3><pre>{{funder}}</pre></div>");
+            graph.tooltip("<div>word: <a href="http://company.g0v.ronny.tw/id/{{no}}" target="_blank">{{text}}({{no}})</a></div><div>count: {{count}}</div> <div>資本額: {{amount}}</div> <div><h3>董監事名單</h3><pre>{{funder}}</pre></div>");
             }, 'json');
 }();
 </script>
