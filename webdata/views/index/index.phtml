@@ -21,7 +21,7 @@ _gaq.push(['_trackPageview']);
 <body>
 <form method="GET" action="/">
     查詢統一編號：<input type="text" name="id" value="<?= $this->Escape($this->id) ?>"><button type="submit">查詢</button>
-    <a href="/index/about">關於本站資料</a>
+    <strong><a href="/index/about">關於本站資料</a></strong>
     <a href="http://company.g0v.ronny.tw" target="_blank">台灣公司資料查詢</a>
 </form>
 <?php if ($this->id) { ?>
