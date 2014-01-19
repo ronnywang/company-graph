@@ -8,7 +8,7 @@ class IndexController extends Pix_Controller
         if ($this->view->id) {
             $this->view->unit = Unit::find(intval($this->view->id));
             if (!$this->view->unit) {
-                return $this->alert("找不到統一編號 {$this->view->id} 的公司");
+                return $this->alert("找不到統一編號 {$this->view->id} 的公司", '/');
             }
         }
     }
