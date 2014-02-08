@@ -34,7 +34,7 @@ class GraphLib
         }
         $obj->id = count(self::$_nodes);
         $obj->count = 0;
-        $obj->funder = self::showFunder($unit->{'董監事名單'});
+        $obj->funder = self::showFunder($unit->{'董監事名單'}, $unit->{'公司名稱'});
         $obj->amount = $unit->{'資本總額(元)'};
         $obj->size = max(1, str_replace(',', '', $obj->amount) / 1000000);
         $obj->no = $id;
@@ -82,7 +82,7 @@ class GraphLib
         return $obj;
     }
 
-    public function showFunder($funders)
+    public function showFunder($funders, $company_name)
     {
         foreach ($funders as $row) {
             $ret .= trim(preg_replace('/\s/', '', $row->{'職稱'}));
@@ -94,7 +94,11 @@ class GraphLib
                 $ret .= '(所代表法人:';
                 $ret .= $row->{'所代表法人'} . ')';
             }
-            $ret .= ', 出資額:' . $row->{'出資額'};
+            if (FALSE !== strpos($company_name, '股份有限公司')) {
+                $ret .= ', 股份數:' . $row->{'出資額'};
+            } else {
+                $ret .= ', 出資額:' . $row->{'出資額'};
+            }
             $ret .= "\n";
         }
         return $ret;
