@@ -106,7 +106,7 @@ class GraphLib
 
     public static function getJSONFromID($id)
     {
-        if ($result = Cache::get($id)) {
+        if (!array_key_exists('flush', $_GET) and $result = Cache::get($id)) {
             return json_decode($result);
         }
 
