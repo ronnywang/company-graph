@@ -117,7 +117,7 @@ class GraphLib
         }
         self::parseCompany($id, $data);
         $result = array(self::$_nodes, array_values(self::$_edges));
-        Cache::set($id, json_encode($result, JSON_UNESCAPED_UNICODE));
+        Cache::set($id, json_encode($result));
         return $result;
     }
 }
