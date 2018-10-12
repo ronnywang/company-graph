@@ -97,6 +97,7 @@ abstract class Pix_Table
     protected $_filters = array();
     public static $_verify = true;
     public static $_save_memory = false;
+    protected $_table_save_memory = false;
 
     /**
      *  記錄哪些東西要 Cache
@@ -590,6 +591,15 @@ abstract class Pix_Table
     public static function bulkInsert($keys, $values_list, $options = array())
     {
         $table = self::getTable();
+        if (!$values_list) {
+            return;
+        }
+        if (array_key_exists('chunk', $options)) {
+            foreach (array_chunk($values_list, intval($options['chunk'])) as $chunk_list) {
+                $table->getDb()->bulkInsert($table, $keys, $chunk_list, $options);
+            }
+            return true;
+        }
 
         return $table->getDb()->bulkInsert($table, $keys, $values_list, $options);
     }
@@ -797,6 +807,11 @@ abstract class Pix_Table
 	$this->_table_cache = true;
     }
 
+    public function setTableSaveMemory($save_memory)
+    {
+        $this->_table_save_memory = $save_memory;
+    }
+
     /**
      * disableTableCache 停用 Table Cache
      *
@@ -838,7 +853,7 @@ abstract class Pix_Table
 	    $data = $cache->load($cache_key);
             if (is_null($data)) {
                 // write to array cache
-                if (!self::$_save_memory) {
+                if (!self::$_save_memory and !$this->_table_save_memory) {
                     $this->_cache_rows[$array_cache_key] = null;
                 }
 		return null;
@@ -850,7 +865,7 @@ abstract class Pix_Table
             $data = $data['data'];
 
             // write to array cache
-            if (!self::$_save_memory) {
+            if (!self::$_save_memory and !$this->_table_save_memory) {
                 $this->_cache_rows[$array_cache_key] = $data;
             }
 	}
@@ -886,7 +901,7 @@ abstract class Pix_Table
 	}
 
 	// memory cache
-        if (!self::$_save_memory) {
+        if (!self::$_save_memory and !$this->_table_save_memory) {
             $array_cache_key = implode('&', array_map('urlencode', $primary_values));
             $this->_cache_rows[$array_cache_key] = $data;
 	}

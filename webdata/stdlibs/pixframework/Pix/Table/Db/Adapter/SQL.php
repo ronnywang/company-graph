@@ -169,7 +169,10 @@ class Pix_Table_Db_Adapter_SQL extends Pix_Table_Db_Adapter_Abstract
         $select_expression = $this->_getSelectExpression($table, $select_columns);
 
         $sql = 'SELECT ' . $select_expression . ' FROM ' . $this->column_quote($table->getTableName());
-	$sql .= ' WHERE ';
+        if ($search->index()) {
+            $sql .= " USE INDEX (" . $search->index() . ") ";
+        }
+        $sql .= ' WHERE ';
         $sql .= $this->_get_where_clause($search, $table);
         $sql .= $this->_get_clause($search);
 
@@ -231,7 +234,14 @@ class Pix_Table_Db_Adapter_SQL extends Pix_Table_Db_Adapter_Abstract
      */
     public function bulkInsert($table, $keys, $values_list, $options = array())
     {
-        $sql = 'INSERT INTO ' . $this->column_quote($table->getTableName());
+        if (array_key_exists('replace', $options) and $options['replace']) {
+            $sql = 'REPLACE INTO ';
+        } else if (array_key_exists('ignore', $options) and $options['ignore']) {
+            $sql = 'INSERT IGNORE INTO ';
+        } else {
+            $sql = 'INSERT INTO ';
+        }
+        $sql .= $this->column_quote($table->getTableName());
         $sql .= ' (' . implode(',', array_map(array($this, 'column_quote'), $keys)) . ')';
         $sql .= ' VALUES ';
         $sql .= implode(',', array_map(function($values) use ($table, $keys){
