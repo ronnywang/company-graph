@@ -15,6 +15,8 @@ class GraphLib
             return true;
         } elseif (preg_match('#部$#', $str)) {
             return true;
+        } elseif (in_array($str, array('行政院農業委員會'))) {
+            return true;
         } else {
             return false;
         }
