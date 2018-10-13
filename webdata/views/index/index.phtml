@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title><?= $this->unit ? ($this->escape($this->unit->get("公司名稱")->value) . " | ") : "" ?>台灣公司關係圖</title>
+<title><?= $this->unit_title ? $this->escape($this->unit_title . " | ") : "" ?>台灣公司關係圖</title>
 <link rel="stylesheet" href="/static/build.css" />
 <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
 <?php if (getenv('GOOGLEANALYTICS_ACCOUNT')) { ?>
@@ -21,8 +21,8 @@ _gaq.push(['_trackPageview']);
 <?php } ?>
 </head>
 <body>
-<form method="GET" action="/">
-    查詢統一編號：<input type="text" name="id" value="<?= $this->Escape($this->id) ?>"><button type="submit">查詢</button>
+<form method="GET" action="/" id="query-form">
+    查詢統一編號、完整公司名稱、法人名稱或政府機關名稱：<input type="text" name="id" value="<?= $this->Escape($this->id) ?>"><button type="submit">查詢</button>
     <strong><a href="/index/about">關於本站資料</a>(資料更新時間：<?= date('Y-m-d', KeyValue::get('data_updated_at')) ?>)</strong>
     <a href="http://company.g0v.ronny.tw" target="_blank">台灣公司資料查詢</a>
 </form>
@@ -49,13 +49,33 @@ for (var cluster in color_map) {
     $('#color-hint').append($('<li></li>').css('background-color', color_map[cluster]).text(cluster));
 };
 
+$('#query-form').submit(function(e){
+    var input_dom = $('input:text', this);
+    var input = input_dom.val();
+    var form_dom = $(this);
+
+    if (input.match(/有限公司$/)) {
+        e.preventDefault();
+
+        $.get('//company.g0v.ronny.tw/api/search?q=' + encodeURIComponent(input), function(ret){
+            if (!ret.found) {
+                alert("找不到 " + input + " 的公司統一編號");
+                return;
+            }
+
+            document.location = '/?id=' + ret.data[0]['統一編號'];
+        }, 'json');
+    }
+
+});
+
 !function() {
     <?php if (!$this->id) { ?>
         return;
     <?php } ?>
 
     // https://github.com/ignacioola/insights
-    $.get("/index/json?id=<?= intval($this->id) ?>", function(data) {
+    $.get("/index/json?id=<?= urlencode($this->id) ?>", function(data) {
             var nodes = data[0],
             links = data[1],
             el = document.getElementById("parent");

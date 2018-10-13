@@ -33,7 +33,9 @@ class GraphLib
         if ($type == 1) {
             $obj = new StdClass;
             $obj->id = count(self::$_nodes);
-            if (self::isForeigh($id)) {
+            if (self::$_start_id == $id) {
+                $obj->cluster = '目標';
+            } elseif (self::isForeigh($id)) {
                 $obj->cluster = '外商';
             } elseif (self::isGoverment($id)) {
                 $obj->cluster = '政府';
@@ -81,7 +83,7 @@ class GraphLib
         foreach ($unit_datas as $id => $unit) {
             $obj = new StdClass;
 
-            if (self::$_start_id == intval($id)) {
+            if (self::$_start_id == $id) {
                 $obj->cluster = '目標';
             } else if (self::isForeigh($unit->{'公司名稱'})) {
                 $obj->cluster = '外商';
@@ -145,7 +147,11 @@ class GraphLib
 
     public static function parseCompany($id, $depth = 3)
     {
-        self::insertQueryPool(0, intval($id));
+        if (preg_match('#^[0-9]+$#', $id)) {
+            self::insertQueryPool(0, intval($id));
+        } else {
+            self::insertQueryPool(1, $id);
+        }
 
         if (is_null(self::$_columns)) {
             self::$_columns = array();
@@ -195,7 +201,7 @@ class GraphLib
 
     public static function getJSONFromID($id)
     {
-        self::$_start_id = intval($id);
+        self::$_start_id = $id;
         self::parseCompany($id);
         $result = array(self::$_nodes, array_values(self::$_edges));
         return $result;
