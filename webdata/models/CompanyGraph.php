@@ -13,7 +13,7 @@ class CompanyGraph extends Pix_Table
         $this->_columns['board_id'] = array('type' => 'int', 'unsigned' => true);
         $this->_columns['board_name'] = array('type' => 'varchar', 'size' => 64);
         // 擁有股份
-        $this->_columns['amount'] = array('type' => 'int');
+        $this->_columns['amount'] = array('type' => 'bigint');
 
         $this->addIndex('board_company', array('board_type', 'board_id', 'company_id'), 'unique');
     }
