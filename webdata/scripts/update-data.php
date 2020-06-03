@@ -125,6 +125,5 @@ if (!$old_data_time or date('Ym', $old_data_time) == date('Ym', $new_data_time))
     $db->query("RENAME TABLE company_graph TO company_graph_" . date('Ym', $old_data_time));
     $db->query("RENAME TABLE company_graph_tmp TO company_graph");
 }
-$db->query("TRUNCATE TABLE cache");
 KeyValue::set('data_updated_at', $new_data_time);
 
