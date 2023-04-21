@@ -94,10 +94,11 @@ class GraphLib
             }
             $obj->id = count(self::$_nodes);
             $obj->funder = self::showFunder($unit->{'董監事名單'}, $unit->{'公司名稱'});
-            $obj->amount = intval(str_replace(',', '', $unit->{'資本總額(元)'}));
+            $obj->amount = intval(str_replace(',', '', $unit->{'實收資本額(元)'}));
             $obj->size = max(1, str_replace(',', '', $obj->amount) / 1000000);
             $obj->no = $id;
             $obj->text = str_replace('股份有限公司', '', $unit->{'公司名稱'});
+            $obj->amount_per_stock = intval($unit->{'每股金額(元)'}) ?: 10;
             self::$_mappings['0-' . intval($id)] = $obj->id;
             self::$_nodes[] = $obj;
 
@@ -105,6 +106,13 @@ class GraphLib
             foreach ($unit->{'董監事名單'} as $row) {
                 $p = $row->{'所代表法人'};
 
+                $row->{'出資額'} = intval(str_replace(',', '', $row->{'出資額'}));
+
+                if (FALSE !== strpos($unit->{'公司名稱'}, '股份有限公司')) {
+                    $fund_amount = $row->{'出資額'} * $obj->amount_per_stock;
+                } else {
+                    $fund_amount = $row->{'出資額'};
+                }
                 $from_company = '0-' . $id;
                 $to_holder = null;
                 if (is_array($p)) {
@@ -126,7 +134,7 @@ class GraphLib
                     exit;
                 }
                 if (!is_null($to_holder)) {
-                    self::$_edges[$from_company . ':' . $to_holder] = array($from_company, $to_holder);
+                    self::$_edges[$from_company . ':' . $to_holder] = array($from_company, $to_holder, $fund_amount, $obj->amount ? $fund_amount / $obj->amount : 0) ;
                 }
             }
         }
@@ -137,7 +145,9 @@ class GraphLib
             $from_company = '0-' . $company_graph->company_id;
             $to_holder = $company_graph->board_type . '-' . $company_graph->board_id;
 
-            self::$_edges[$from_company . ':' . $to_holder] = array($from_company, $to_holder);
+            if (!array_key_exists("{$from_company}:{$to_holder}", self::$_edges)) {
+                self::$_edges[$from_company . ':' . $to_holder] = array($from_company, $to_holder);
+            }
         }
     }
 
@@ -169,13 +179,17 @@ class GraphLib
         self::getDataFromQueryPool(true);
 
         self::$_edges = array_map(function($edge) {
-            return array_map(function($node) {
+            $change_id = function($node) {
                 if (!array_key_exists($node, self::$_mappings)) {
                     return null;
                 }
                 return self::$_mappings[$node];
-            }, $edge);
+            };
+            $edge[0] = $change_id($edge[0]);
+            $edge[1] = $change_id($edge[1]);
+            return $edge;
         }, self::$_edges);
+
         self::$_edges = array_filter(self::$_edges, function($a) { return !is_null($a[0]) and !is_null($a[1]); });
     }
 
